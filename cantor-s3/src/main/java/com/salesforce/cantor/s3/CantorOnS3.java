@@ -10,7 +10,6 @@ package com.salesforce.cantor.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.salesforce.cantor.Cantor;
 import com.salesforce.cantor.Events;
-import com.salesforce.cantor.Maps;
 import com.salesforce.cantor.Objects;
 import com.salesforce.cantor.Sets;
 
@@ -30,11 +29,6 @@ public class CantorOnS3 implements Cantor {
 
     @Override
     public Sets sets() {
-        throw new UnsupportedOperationException("Sets not implemented on S3");
-    }
-
-    @Override
-    public Maps maps() {
         throw new UnsupportedOperationException("Sets not implemented on S3");
     }
 

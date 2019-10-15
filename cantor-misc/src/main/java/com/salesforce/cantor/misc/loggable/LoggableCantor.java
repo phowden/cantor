@@ -28,7 +28,6 @@ public class LoggableCantor implements Cantor {
 
     private final LoggableObjects objects;
     private final LoggableSets sets;
-    private final LoggableMaps maps;
     private final LoggableEvents events;
 
     public LoggableCantor(final Cantor delegate) {
@@ -38,7 +37,6 @@ public class LoggableCantor implements Cantor {
 
         this.objects = new LoggableObjects(delegate.objects());
         this.sets = new LoggableSets(delegate.sets());
-        this.maps = new LoggableMaps(delegate.maps());
         this.events = new LoggableEvents(delegate.events());
     }
 
@@ -50,11 +48,6 @@ public class LoggableCantor implements Cantor {
     @Override
     public Sets sets() {
         return this.sets;
-    }
-
-    @Override
-    public Maps maps() {
-        return this.maps;
     }
 
     @Override

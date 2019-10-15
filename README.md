@@ -1,7 +1,7 @@
 # Cantor
 
 Cantor is a *persistent data abstraction layer*; it provides functionalities to query and retrieve data stored 
-as *key/value pairs*, *sorted sets*, *map of key/values*, or *multi-dimensional time-series data points*.
+as *key/value pairs*, *sorted sets*, or *multi-dimensional time-series data points*.
 
 ### Basics
 

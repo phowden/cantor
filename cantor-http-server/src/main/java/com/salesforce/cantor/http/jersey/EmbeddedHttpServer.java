@@ -29,10 +29,9 @@ public class EmbeddedHttpServer {
         config.register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(new EventsResource(cantor));
                 bind(new ObjectsResource(cantor));
                 bind(new SetsResource(cantor));
-                bind(new MapsResource(cantor));
+                bind(new EventsResource(cantor));
             }
         });
 
