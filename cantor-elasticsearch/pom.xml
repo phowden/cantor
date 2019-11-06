@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019, Salesforce.com, Inc.
+  ~ All rights reserved.
+  ~ SPDX-License-Identifier: BSD-3-Clause
+  ~ For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cantor-elasticsearch</artifactId>
+    <packaging>jar</packaging>
+    <name>cantor-elasticsearch</name>
+
+    <description>Cantor on ElasticSearch</description>
+
+    <parent>
+        <groupId>com.salesforce.cantor</groupId>
+        <artifactId>cantor-parent</artifactId>
+        <version>0.0.4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <elasticsearch.transport.version>7.4.2</elasticsearch.transport.version>
+    </properties>
+
+    <dependencies>
+        <!--CANTOR BASE-->
+        <dependency>
+            <groupId>com.salesforce.cantor</groupId>
+            <artifactId>cantor-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--CANTOR COMMON-->
+        <dependency>
+            <groupId>com.salesforce.cantor</groupId>
+            <artifactId>cantor-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--ELASTIC SEARCH-->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${elasticsearch.transport.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
