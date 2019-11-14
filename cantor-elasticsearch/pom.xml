@@ -25,7 +25,7 @@
     </parent>
 
     <properties>
-        <elasticsearch.transport.version>7.4.2</elasticsearch.transport.version>
+        <elasticsearch.version>7.4.2</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -43,9 +43,36 @@
         </dependency>
         <!--ELASTIC SEARCH-->
         <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+        <!--ES REST CLIENT-->
+        <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
-            <version>${elasticsearch.transport.version}</version>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+        <!--TEST DEPENDENCIES-->
+        <!-- LOGBACK -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--TESTNG -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--CANTOR COMMON TEST JAR-->
+        <dependency>
+            <groupId>com.salesforce.cantor</groupId>
+            <artifactId>cantor-common</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -5,33 +5,43 @@ import com.salesforce.cantor.Events;
 import com.salesforce.cantor.Maps;
 import com.salesforce.cantor.Objects;
 import com.salesforce.cantor.Sets;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class CantorOnElasticSearch implements Cantor {
+    private static final Logger logger = LoggerFactory.getLogger(CantorOnElasticSearch.class);
+    private final Objects objects;
+    private final Sets sets;
+    private final Maps maps;
+    private final Events events;
 
-    private final Client client;
-
-    public CantorOnElasticSearch(final Client client) {
-        this.client = client;
+    public CantorOnElasticSearch(final RestHighLevelClient client) throws IOException {
+        this.objects = new ObjectsOnElasticSearch(client);
+        this.sets = null;
+        this.maps = null;
+        this.events = null;
     }
 
     @Override
     public Objects objects() {
-        return null;
+        return this.objects;
     }
 
     @Override
     public Sets sets() {
-        return null;
+        return this.sets;
     }
 
     @Override
     public Maps maps() {
-        return null;
+        return this.maps;
     }
 
     @Override
     public Events events() {
-        return null;
+        return this.events;
     }
 }
