@@ -8,29 +8,25 @@
 package com.salesforce.cantor.common;
 
 import com.salesforce.cantor.Objects;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
+import static org.testng.Assert.assertTrue;
 
 public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
-    private final String namespace = UUID.randomUUID().toString();
-
-    @BeforeMethod
-    public void before() throws Exception {
-        getObjects().create(this.namespace);
-    }
-
-    @AfterMethod
-    public void after() throws Exception {
-        getObjects().drop(this.namespace);
-    }
-
     // override to store less (for impls that storing is more expensive) by setting to less than 1
     protected double getStoreMagnitude() {
         return 1.0D;
@@ -39,21 +35,24 @@ public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
     @Test
     public void testBadInput() throws Exception {
         final Objects objects = getObjects();
+        final String namespace = UUID.randomUUID().toString();
+        objects.create(namespace);
 
-        assertThrows(IllegalArgumentException.class, () -> objects.store(this.namespace, null, new byte[0]));
-        assertThrows(IllegalArgumentException.class, () -> objects.store(this.namespace, "", new byte[0]));
-        assertThrows(IllegalArgumentException.class, () -> objects.store(this.namespace, "abc", null));
+        assertThrows(IllegalArgumentException.class, () -> objects.store(namespace, null, new byte[0]));
+        assertThrows(IllegalArgumentException.class, () -> objects.store(namespace, "", new byte[0]));
+        assertThrows(IllegalArgumentException.class, () -> objects.store(namespace, "abc", null));
 
-        assertThrows(IllegalArgumentException.class, () -> objects.get(this.namespace, (String) null));
-        assertThrows(IllegalArgumentException.class, () -> objects.get(this.namespace, ""));
-        assertThrows(IllegalArgumentException.class, () -> objects.get(this.namespace, (Collection<String>) null));
+        assertThrows(IllegalArgumentException.class, () -> objects.get(namespace, (String) null));
+        assertThrows(IllegalArgumentException.class, () -> objects.get(namespace, ""));
+        assertThrows(IllegalArgumentException.class, () -> objects.get(namespace, (Collection<String>) null));
 
-        assertThrows(IllegalArgumentException.class, () -> objects.delete(this.namespace, (String) null));
-        assertThrows(IllegalArgumentException.class, () -> objects.delete(this.namespace, ""));
-        assertThrows(IllegalArgumentException.class, () -> objects.delete(this.namespace, (Collection<String>) null));
+        assertThrows(IllegalArgumentException.class, () -> objects.delete(namespace, (String) null));
+        assertThrows(IllegalArgumentException.class, () -> objects.delete(namespace, ""));
+        assertThrows(IllegalArgumentException.class, () -> objects.delete(namespace, (Collection<String>) null));
 
-        // trying to store an object in a this.namespace that is not created yet should throw ioexception
+        // trying to store an object in a namespace that is not created yet should throw ioexception
         assertThrows(IOException.class, () -> objects.store(UUID.randomUUID().toString(), "foo", "bar".getBytes()));
+        objects.drop(namespace);
     }
 
     @Test
@@ -78,35 +77,40 @@ public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
     @Test
     public void testStoreGetDelete() throws Exception {
         final Objects objects = getObjects();
+        final String namespace = UUID.randomUUID().toString();
+        objects.create(namespace);
 
         final String key = UUID.randomUUID().toString();
         final byte[] value = UUID.randomUUID().toString().getBytes();
 
-        assertNull(objects.get(this.namespace, key));
-        assertFalse(objects.delete(this.namespace, key));
-        objects.store(this.namespace, key, value);
-        assertEquals(value, objects.get(this.namespace, key));
-        assertTrue(objects.delete(this.namespace, key));
-        assertNull(objects.get(this.namespace, key));
+        assertNull(objects.get(namespace, key));
+        assertFalse(objects.delete(namespace, key));
+        objects.store(namespace, key, value);
+        assertEquals(value, objects.get(namespace, key));
+        assertTrue(objects.delete(namespace, key));
+        assertNull(objects.get(namespace, key));
 
         final Map<String, byte[]> batch = new HashMap<>(100);
-        storeRandom(objects, this.namespace, batch, 100);
+        storeRandom(objects, namespace, batch, 100);
 
         for (final String k : batch.keySet()) {
-            assertEquals(batch.get(k), objects.get(this.namespace, k));
+            assertEquals(batch.get(k), objects.get(namespace, k));
         }
 
-        objects.delete(this.namespace, batch.keySet());
+        objects.delete(namespace, batch.keySet());
         for (final String k : batch.keySet()) {
-            assertNull(objects.get(this.namespace, k));
+            assertNull(objects.get(namespace, k));
         }
+        objects.drop(namespace);
     }
 
     @Test
     public void testStoreGetBatch() throws Exception {
         final Objects objects = getObjects();
+        final String namespace = UUID.randomUUID().toString();
+        objects.create(namespace);
 
-        final Map<String, byte[]> empty = objects.get(this.namespace, Collections.emptyList());
+        final Map<String, byte[]> empty = objects.get(namespace, Collections.emptyList());
         assertTrue(empty.isEmpty());
 
         final Map<String, byte[]> kvs = new HashMap<>();
@@ -117,25 +121,29 @@ public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
         }
 
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
-            assertNull(objects.get(this.namespace, entry.getKey()));
+            assertNull(objects.get(namespace, entry.getKey()));
         }
-        objects.store(this.namespace, kvs);
-        final Map<String, byte[]> results = objects.get(this.namespace, kvs.keySet());
+        objects.store(namespace, kvs);
+        final Map<String, byte[]> results = objects.get(namespace, kvs.keySet());
         assertEquals(kvs.size(), results.size());
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
             assertEquals(results.get(entry.getKey()), entry.getValue());
         }
-        objects.delete(this.namespace, kvs.keySet());
+        objects.delete(namespace, kvs.keySet());
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
-            assertNull(objects.get(this.namespace, entry.getKey()));
+            assertNull(objects.get(namespace, entry.getKey()));
         }
+
+        objects.drop(namespace);
     }
 
     @Test
     public void testStoreKeys() throws Exception {
         final Objects objects = getObjects();
+        final String namespace = UUID.randomUUID().toString();
+        objects.create(namespace);
 
-        final Map<String, byte[]> empty = objects.get(this.namespace, Collections.emptyList());
+        final Map<String, byte[]> empty = objects.get(namespace, Collections.emptyList());
         assertTrue(empty.isEmpty());
 
         final Map<String, byte[]> kvs = new HashMap<>();
@@ -146,39 +154,43 @@ public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
         }
 
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
-            assertNull(objects.get(this.namespace, entry.getKey()));
+            assertNull(objects.get(namespace, entry.getKey()));
         }
-        objects.store(this.namespace, kvs);
+        objects.store(namespace, kvs);
         final int count = ThreadLocalRandom.current().nextInt(1, 99);
-        final Collection<String> partialResults = objects.keys(this.namespace, 0, count);
+        final Collection<String> partialResults = objects.keys(namespace, 0, count);
         assertEquals(partialResults.size(), count);
 
-        final Collection<String> results = objects.keys(this.namespace, 0, -1);
+        final Collection<String> results = objects.keys(namespace, 0, -1);
         assertEquals(kvs.size(), results.size());
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
             assertTrue(results.contains(entry.getKey()));
         }
-        objects.delete(this.namespace, kvs.keySet());
+        objects.delete(namespace, kvs.keySet());
         for (final Map.Entry<String, byte[]> entry : kvs.entrySet()) {
-            assertNull(objects.get(this.namespace, entry.getKey()));
+            assertNull(objects.get(namespace, entry.getKey()));
         }
+
+        objects.drop(namespace);
     }
 
     @Test
     public void testSize() throws Exception {
         final Objects objects = getObjects();
+        final String namespace = UUID.randomUUID().toString();
+        objects.create(namespace);
 
         // delete everything, should leave 0 objects
-        objects.create(this.namespace);
-        objects.drop(this.namespace);
-        objects.create(this.namespace);
+        objects.create(namespace);
+        objects.drop(namespace);
+        objects.create(namespace);
 
-        assertEquals(objects.size(this.namespace), 0);
+        assertEquals(objects.size(namespace), 0);
 
         // store and check size
         final Map<String, byte[]> batch = new HashMap<>();
-        storeRandom(objects, this.namespace, batch, 1_000);
-        assertEquals(objects.size(this.namespace), batch.size());
+        storeRandom(objects, namespace, batch, 1_000);
+        assertEquals(objects.size(namespace), batch.size());
 
         // delete and check size
         int removed = 0;
@@ -186,14 +198,16 @@ public abstract class AbstractBaseObjectsTest extends AbstractBaseCantorTest {
             if (removed >= batch.size() / 2) {
                 break;
             }
-            objects.delete(this.namespace, key);
+            objects.delete(namespace, key);
             removed++;
         }
-        assertEquals(objects.size(this.namespace), batch.size() - removed);
+        assertEquals(objects.size(namespace), batch.size() - removed);
 
         // delete and check again
-        objects.delete(this.namespace, batch.keySet());
-        assertEquals(objects.size(this.namespace), 0);
+        objects.delete(namespace, batch.keySet());
+        assertEquals(objects.size(namespace), 0);
+
+        objects.drop(namespace);
     }
 
     private void storeRandom(final Objects objects,
