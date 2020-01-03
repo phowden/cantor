@@ -64,6 +64,8 @@ public class BaseDistributedCantor<T> {
     }
 
     // todo: success ratio less than one can result in mismatches, inconsistencies, do we have solutions?
+    // todo: should we lock namespaces while writing? can be races with parallel writes
+    // todo: ^ read/write/async repair?
     <R> R writeAndGetResult(final String name, final IOFunction<T, R> func) throws IOException {
         final int requiredSuccess = (int) (delegates.size() * ratio);
         final List<Future<R>> futures = new ArrayList<>(delegates.size());
@@ -153,11 +155,11 @@ public class BaseDistributedCantor<T> {
         return sleepTimeMillis * 2;
     }
 
-    static interface IOFunction<T, R> {
+    interface IOFunction<T, R> {
         R apply(T t) throws IOException;
     }
 
-    static interface IOConsumer<T> {
+    interface IOConsumer<T> {
         void consume(T t) throws IOException;
     }
 }
